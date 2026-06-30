@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Recipe Discovery System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --dark: #2f2f2f;
+            --bg-light: #f7fff7;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --white: #ffffff;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #fcf8f2;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Student Metadata Header Box */
+        .student-header {
+            background: linear-gradient(135deg, #2d3748, #1a202c);
+            color: var(--white);
+            padding: 2.5rem 5%;
+            border-bottom: 4px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .student-info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto 1.5rem auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.2rem 2rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .info-item {
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item strong {
+            color: var(--secondary);
+        }
+
+        .problem-statement-box {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .problem-statement-box h3 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .problem-statement-box p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Banner Recommendations Slider */
+        .hero {
+            position: relative;
+            height: 60vh;
+            width: 100%;
+            overflow: hidden;
+            background: #1a202c;
+        }
+
+        .slider-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide.active { opacity: 1; }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+        }
+
+        .hero-content {
+            position: relative;
+            color: var(--white);
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            background: var(--primary);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+
+        /* Engine Search Bar */
+        .search-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 40px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            width: 90%;
+            max-width: 950px;
+            margin: -40px auto 0 auto;
+            position: relative;
+            z-index: 100;
+        }
+
+        .search-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            border-right: 1px solid #e2e8f0;
+            padding-right: 1rem;
+        }
+
+        .search-input-group:last-of-type { border: none; }
+        .search-input-group i { color: var(--primary); font-size: 1.2rem; }
+
+        .search-input-group input, .search-input-group select {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+            color: var(--text-dark);
+            background: transparent;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.8rem 2.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .search-btn:hover { background: #ff5252; }
+
+        /* Advanced Dietary Filters */
+        .filters-wrapper {
+            max-width: 1200px;
+            margin: 2.5rem auto 1rem auto;
+            padding: 0 5%;
+            text-align: center;
+        }
+
+        .filter-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+        }
+
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background: var(--white);
+            border: 2px solid #e2e8f0;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .category-btn.active, .category-btn:hover {
+            background: var(--dark);
+            color: var(--white);
+            border-color: var(--dark);
+        }
+
+        /* Recipe Feed Layout */
+        .main-dashboard {
+            display: grid;
+            grid-template-columns: 2.8fr 1.2fr;
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 5%;
+        }
+
+        .section-heading {
+            margin-bottom: 1.5rem;
+            font-size: 1.6rem;
+            color: var(--dark);
+            border-bottom: 3px solid var(--secondary);
+            display: inline-block;
+            padding-bottom: 0.25rem;
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Interactive Recipe Cards */
+        .recipe-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+        }
+
+        .card-img-box {
+            position: relative;
+            height: 200px;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .diet-tag {
+            position: absolute;
+            top: 1rem; left: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #2f855a;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .fav-toggle {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: var(--white);
+            border: none;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        .fav-toggle i { color: var(--text-muted); transition: var(--transition); }
+        .fav-toggle.favorited i { color: var(--primary); }
+
+        .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .recipe-title { font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--dark); }
+        
+        .recipe-metrics {
+            display: flex; gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem; margin-bottom: 1rem;
+        }
+
+        /* Macro Nutritional Widget inside card */
+        .nutrition-bar {
+            background: #edf2f7;
+            padding: 0.6rem;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            text-align: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        .macro span { display: block; font-weight: 700; color: var(--dark); }
+
+        .inspect-btn {
+            background: var(--secondary);
+            color: var(--white);
+            border: none; width: 100%;
+            padding: 0.7rem; border-radius: 8px;
+            font-weight: 600; cursor: pointer;
+            transition: var(--transition);
+            margin-top: auto;
+        }
+        .inspect-btn:hover { background: #3dbcb3; }
+
+        /* Interactive Sidebar panel (Favorites, Ingredients tracker) */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .widget-box {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        }
+
+        .widget-box h3 {
+            font-size: 1.15rem; margin-bottom: 1rem;
+            color: var(--dark); display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        .fav-list-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            margin-bottom: 0.75rem; padding-bottom: 0.75rem;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .fav-list-item:last-child { border: none; margin: 0; padding: 0; }
+        .fav-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .fav-info h4 { font-size: 0.9rem; color: var(--dark); }
+        .fav-info p { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Recipe Details Instruction Modal Popout */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; padding: 1rem;
+        }
+        .modal-content {
+            background: var(--white);
+            width: 100%; max-width: 650px;
+            border-radius: 16px; overflow-y: auto;
+            max-height: 85vh; padding: 2rem;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute; top: 1rem; right: 1rem;
+            font-size: 1.5rem; cursor: pointer; color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 992px) {
+            .main-dashboard { grid-template-columns: 1fr; }
+            .search-container {
+                flex-direction: column; border-radius: 20px;
+                padding: 1.5rem; margin-top: -20px;
+            }
+            .search-input-group {
+                border-right: none; border-bottom: 1px solid #e2e8f0;
+                padding-bottom: 1rem; width: 100%;
+            }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-content h1 { font-size: 2.1rem; }
+            .student-info-grid { flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="student-header">
+        <div class="student-info-grid">
+            <div class="info-item"><strong>Name:</strong> Siddhi Nikhare</div>
+            <div class="info-item"><strong>USN:</strong> CS24178</div>
+        </div>
+        <div class="problem-statement-box">
+            <h3>Problem Statement: Intelligent Recipe Discovery System</h3>
+            <p>Many home cooks find it difficult to decide what to prepare with available ingredients. Create a Recipe Finder application that integrates with a public recipe API to search recipes by ingredient, cuisine, or meal type. The application should display nutritional information, cooking instructions, preparation time, recipe images, dietary filters, favorite recipes, and personalized recipe recommendations with an interactive user experience.</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="logo"><i class="fa-solid fa-utensils"></i> RECIPE-ENGINE</div>
+        <ul class="nav-links">
+            <li><a href="#search">Search</a></li>
+            <li><a href="#explore">Discover</a></li>
+            <li><a href="#favorites">My Stash</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="explore">
+        <div class="slider-container">
+            <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80')">
+                <div class="hero-content">
+                    <span class="hero-badge">Chef's Match Recommendation</span>
+                    <h1>Tuscan Garlic Herb Chicken</h1>
+                    <p>Enriched with micro-nutrients & high protein configurations perfectly balancing energy output thresholds.</p>
+                </div>
+            </div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1200&q=80')">
+                <div class="hero-content">
+                    <span class="hero-badge">High-Fiber Pick</span>
+                    <h1>Artisan Mediterranean Avocado Pizza</h1>
+                    <p>Engineered with healthy fats, customized sourdough crust, and local garden ingredient varieties.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="search-container" id="search">
+        <div class="search-input-group">
+            <i class="fa-solid fa-lemon"></i>
+            <input type="text" id="ingredientInput" placeholder="Enter ingredients (e.g., tomato, chicken, garlic)..." onkeyup="executeDynamicSearch()">
+        </div>
+        <div class="search-input-group">
+            <i class="fa-solid fa-globe"></i>
+            <select id="cuisineSelect" onchange="executeDynamicSearch()">
+                <option value="all">All Cuisines</option>
+                <option value="italian">Italian</option>
+                <option value="mexican">Mexican</option>
+                <option value="asian">Asian</option>
+            </select>
+        </div>
+        <button class="search-btn" onclick="executeDynamicSearch()"><i class="fa-solid fa-magnifying-glass"></i> Find Recipes</button>
+    </div>
+
+    <div class="filters-wrapper">
+        <div class="filter-title">Filter by Dietary Profiles</div>
+        <div class="categories">
+            <button class="category-btn active" onclick="applyDietaryFilter('all', this)">All Dietary Profiles</button>
+            <button class="category-btn" onclick="applyDietaryFilter('Keto', this)">High Protein / Keto</button>
+            <button class="category-btn" onclick="applyDietaryFilter('Vegan', this)">Strict Vegan</button>
+            <button class="category-btn" onclick="applyDietaryFilter('Gluten-Free', this)">Gluten-Free Only</button>
+        </div>
+    </div>
+
+    <main class="main-dashboard">
+        
+        <div>
+            <h2 class="section-heading">Discovered Recipe Matches</h2>
+            <div class="recipes-grid" id="recipesGrid">
+                <div class="recipe-card" data-diet="Keto" data-cuisine="italian" data-ingredients="chicken tomato garlic cheese">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=80" alt="Garlic Chicken" class="card-img">
+                        <span class="diet-tag">Keto Profile</span>
+                        <button class="fav-toggle" onclick="toggleFavorite(1, 'Tuscan Garlic Chicken', '35 Mins', 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=80', this)">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="recipe-title">Tuscan Garlic Chicken</h3>
+                        <div class="recipe-metrics">
+                            <span><i class="fa-solid fa-clock"></i> 35 Mins</span>
+                            <span><i class="fa-solid fa-fire"></i> 420 Calories</span>
+                        </div>
+                        <div class="nutrition-bar">
+                            <div class="macro"><span>38g</span>Protein</div>
+                            <div class="macro"><span>8g</span>Carbs</div>
+                            <div class="macro"><span>24g</span>Fats</div>
+                        </div>
+                        <button class="inspect-btn" onclick="openRecipeModal('Tuscan Garlic Chicken', ['4 skinless chicken breasts', '3 cloves garlic minced', '1 cup cherry tomatoes', '1/2 cup heavy cream', '2 cups fresh spinach'], ['Season chicken breasts with salt, pepper, and oregano.', 'Sear in a hot skillet with olive oil for 6 minutes per side until golden.', 'Remove chicken, lower heat, and sauté garlic and cherry tomatoes.', 'Pour in heavy cream, add spinach, and let simmer until sauce thickens.', 'Return chicken to skillet and baste thoroughly with the cream sauce before serving.'])">View Instructions</button>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-diet="Vegan" data-cuisine="mexican" data-ingredients="avocado tomato beans pepper bean onion">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=600&q=80" alt="Zesty Avocado Salad Bowl" class="card-img">
+                        <span class="diet-tag">Vegan Profile</span>
+                        <button class="fav-toggle" onclick="toggleFavorite(2, 'Avocado Bean Salad Bowl', '15 Mins', 'https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=600&q=80', this)">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="recipe-title">Avocado Bean Salad Bowl</h3>
+                        <div class="recipe-metrics">
+                            <span><i class="fa-solid fa-clock"></i> 15 Mins</span>
+                            <span><i class="fa-solid fa-fire"></i> 290 Calories</span>
+                        </div>
+                        <div class="nutrition-bar">
+                            <div class="macro"><span>9g</span>Protein</div>
+                            <div class="macro"><span>32g</span>Carbs</div>
+                            <div class="macro"><span>14g</span>Fats</div>
+                        </div>
+                        <button class="inspect-btn" onclick="openRecipeModal('Avocado Bean Salad Bowl', ['2 diced avocados', '1 can black beans rinsed', '1 cup diced ripe tomatoes', '1/2 red onion chopped', '1 lime juiced'], ['Combine black beans, diced tomatoes, and red onion in a deep mixing bowl.', 'Gently fold in the diced avocados to avoid smashing them.', 'Drizzle the freshly squeezed lime juice and toss with sea salt and cilantro.', 'Chill in refrigerator for 10 minutes to allow the zest profiles to marinate.'])">View Instructions</button>
+                    </div>
+                </div>
+
+                <div class="recipe-card" data-diet="Gluten-Free" data-cuisine="asian" data-ingredients="rice shrimp pepper garlic soy sauce ginger">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80" alt="Gluten Free Wok Fried Rice" class="card-img">
+                        <span class="diet-tag">Gluten-Free</span>
+                        <button class="fav-toggle" onclick="toggleFavorite(3, 'Garlic Shrimp Stir-Fry', '20 Mins', 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80', this)">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="recipe-title">Garlic Shrimp Stir-Fry</h3>
+                        <div class="recipe-metrics">
+                            <span><i class="fa-solid fa-clock"></i> 20 Mins</span>
+                            <span><i class="fa-solid fa-fire"></i> 340 Calories</span>
+                        </div>
+                        <div class="nutrition-bar">
+                            <div class="macro"><span>28g</span>Protein</div>
+                            <div class="macro"><span>18g</span>Carbs</div>
+                            <div class="macro"><span>6g</span>Fats</div>
+                        </div>
+                        <button class="inspect-btn" onclick="openRecipeModal('Garlic Shrimp Stir-Fry', ['1lb fresh jumbo shrimp', '3 cups mixed bell peppers sliced', '2 tbsp Tamari gluten-free soy sauce', '1 tbsp grated fresh ginger', '2 cloves garlic'], ['Heat sesame oil in a high-temperature wok.', 'Toss in minced garlic and grated ginger, sautéing for roughly 60 seconds.', 'Add jumbo shrimp, stirring rapidly until they flash pink.', 'Incorporate sliced bell peppers and pour Tamari soy sauce alternative uniformly.', 'Stir-fry for another 3 minutes until peppers are tender-crisp.'])">View Instructions</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="widget-box" id="favorites">
+                <h3><i class="fa-solid fa-heart" style="color: var(--primary);"></i> My Favorite Stash</h3>
+                <div id="favoritesContainer">
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">No favorite recipes pinned yet. Toggle the hearts to store items locally.</p>
+                </div>
+            </div>
+
+            <div class="widget-box">
+                <h3><i class="fa-solid fa-circle-info" style="color: var(--secondary);"></i> Smart Integration Note</h3>
+                <p style="font-size: 0.8rem; line-height: 1.5; color: var(--text-muted);">
+                    This platform module is designed for automated API compatibility arrays. Ingredients provided in the search panel instantly break down to filter recipe assets seamlessly using JavaScript logic mapping.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="recipeModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeRecipeModal()">&times;</span>
+            <h2 id="modalTitle" style="margin-bottom: 1rem; color: var(--dark);">Recipe Title</h2>
+            
+            <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem;">Required Ingredients:</h3>
+            <ul id="modalIngredients" style="margin-left: 1.25rem; margin-bottom: 1.5rem; line-height: 1.6;"></ul>
+            
+            <h3 style="font-size: 1.1rem; color: var(--secondary); margin-bottom: 0.5rem;">Preparation Methodology:</h3>
+            <ol id="modalInstructions" style="margin-left: 1.25rem; line-height: 1.6; color: var(--text-dark);"></ol>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Siddhi Nikhare (CS24178). Intelligent Recipe Discovery System Core Interface.</p>
+    </footer>
+
+    <script>
+        /* 1. Automated Recommendation Image Slider Engine */
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+
+        function cycleSlides() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+        setInterval(cycleSlides, 6000);
+
+        /* 2. Combined Multifaceted Search Filtration Architecture */
+        let activeDiet = 'all';
+
+        function applyDietaryFilter(diet, element) {
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            activeDiet = diet;
+            executeDynamicSearch();
+        }
+
+        function executeDynamicSearch() {
+            const rawSearch = document.getElementById('ingredientInput').value.toLowerCase().trim();
+            const chosenCuisine = document.getElementById('cuisineSelect').value;
+            const cards = document.querySelectorAll('.recipe-card');
+
+            // Explode input ingredients string by spaces or commas to form search arrays
+            const searchingIngredients = rawSearch.split(/[\s,]+/).filter(el => el !== "");
+
+            cards.forEach(card => {
+                const cardDiet = card.getAttribute('data-diet');
+                const cardCuisine = card.getAttribute('data-cuisine');
+                const cardIngredientsList = card.getAttribute('data-ingredients');
+
+                // Determine filter metrics match states
+                const dietMatches = (activeDiet === 'all' || cardDiet === activeDiet);
+                const cuisineMatches = (chosenCuisine === 'all' || cardCuisine === chosenCuisine);
+                
+                // Track if every input element keyword targets elements inside card's text list array string
+                let ingredientsMatch = true;
+                if(searchingIngredients.length > 0) {
+                    ingredientsMatch = searchingIngredients.some(ing => cardIngredientsList.includes(ing));
+                }
+
+                if(dietMatches && cuisineMatches && (rawSearch === "" || ingredientsMatch)) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+
+        /* 3. Interactive Favorites Stash Array Logic Controller */
+        const favoriteItemsMap = new Map();
+
+        function toggleFavorite(id, title, prepTime, imgUrl, button) {
+            button.classList.toggle('favorited');
+            const container = document.getElementById('favoritesContainer');
+
+            if(favoriteItemsMap.has(id)) {
+                favoriteItemsMap.delete(id);
+            } else {
+                favoriteItemsMap.set(id, { title, prepTime, imgUrl });
+            }
+
+            // Render updated structural favorite checklist tracking
+            if(favoriteItemsMap.size === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.85rem;">No favorite recipes pinned yet. Toggle the hearts to store items locally.</p>`;
+                return;
+            }
+
+            let htmlPayload = '';
+            favoriteItemsMap.forEach((item) => {
+                htmlPayload += `
+                    <div class="fav-list-item">
+                        <img src="${item.imgUrl}" class="fav-thumb" alt="thumbnail">
+                        <div class="fav-info">
+                            <h4>${item.title}</h4>
+                            <p><i class="fa-solid fa-clock"></i> ${item.prepTime}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = htmlPayload;
+        }
+
+        /* 4. Functional Modal UI Asset Rendering Pipelines */
+        function openRecipeModal(title, ingredientsArr, instructionsArr) {
+            document.getElementById('modalTitle').innerText = title;
+            
+            const ingList = document.getElementById('modalIngredients');
+            ingList.innerHTML = ingredientsArr.map(ing => `<li>${ing}</li>`).join('');
+            
+            const insList = document.getElementById('modalInstructions');
+            insList.innerHTML = instructionsArr.map(ins => `<li>${ins}</li>`).join('');
+
+            document.getElementById('recipeModal').style.display = 'flex';
+        }
+
+        function closeRecipeModal() {
+            document.getElementById('recipeModal').style.display = 'none';
+        }
+
+        // Close modal instantly if outer gray backdrop frame region is selected
+        window.onclick = function(event) {
+            const modal = document.getElementById('recipeModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
